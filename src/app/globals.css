@@ -63,7 +63,7 @@ a {
 .recharts-bar,
 .recharts-line,
 .recharts-area {
-  transition: all 0.3s ease;
+  transition: all 0.15s ease;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -110,7 +110,7 @@ a {
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: transform 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .metric-card:hover {
@@ -224,6 +224,19 @@ a {
   top: 1rem;
   right: 1rem;
   cursor: pointer;
+  padding: 2px;
+  width: 32px;
+  height: 32px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.dark-mode-toggle:hover {
+  background-color: var(--background-secondary);
+
 }
 
 /* Tab Navigation */
@@ -243,7 +256,7 @@ a {
   color: var(--foreground-secondary);
   cursor: pointer;
   border-bottom: 3px solid transparent;
-  transition: all 0.3s ease;
+  transition: color 0.15s ease, background 0.15s ease;
   position: relative;
 }
 
@@ -314,11 +327,11 @@ a {
 }
 
 .table-row.won {
-  border-left: 4px solid #10B981;
+  box-shadow: inset 4px 0 0 0 #10B981;
 }
 
 .table-row.lost {
-  border-left: 4px solid #EF4444;
+  box-shadow: inset 4px 0 0 0 #EF4444;
 }
 
 .outcome-badge {
@@ -403,4 +416,54 @@ body.dark .sentiment-badge.neu {
     padding: 0.5rem;
     font-size: 0.8rem;
   }
+}
+
+.gt {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(17, 24, 39, 0.6); /* slate-900 60% */
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+/* Título/label arriba */
+.gt-title {
+  opacity: 0.9;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+/* Fila por cada serie */
+.gt-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Separación entre filas (todas menos la primera) */
+.gt-row--spaced {
+  margin-top: 4px;
+}
+
+/* Bullet de color de la serie */
+.gt-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Valor y nombre */
+.gt-value {
+  opacity: 0.95;
+}
+.gt-name {
+  opacity: 0.75;
 }

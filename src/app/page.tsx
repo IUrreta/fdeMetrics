@@ -150,7 +150,7 @@ export default function CallsPage() {
       return acc;
     }, {} as Record<string, any>);
 
-    
+
 
     function sum<T>(arr: T[], pick: (x: T) => number): number {
       return arr.reduce((s, x) => s + pick(x), 0);
@@ -204,12 +204,40 @@ export default function CallsPage() {
 
   const winRate = Math.round((metrics.wonCalls / metrics.totalCalls) * 100);
 
-  const applyTheme = () => {
-    const body = document.body;
-    body.classList.toggle("dark", darkMode);
-    setDarkMode(!darkMode);
-    //save in localStorage
-    localStorage.setItem("darkMode", JSON.stringify(!darkMode));
+
+
+  const GlassTooltip = ({
+    active,
+    payload,
+    label,
+  }: {
+    active?: boolean;
+    payload?: Array<{ color?: string; fill?: string; value?: number; name?: string }>;
+    label?: string;
+  }) => {
+    if (!active || !payload?.length) return null;
+    const item = payload[0]; // primera serie (tu "value")
+
+    return (
+      <div className="gt">
+        <div className="gt-title">{label}</div>
+
+        {payload.map((item, index) => (
+          <div
+            key={index}
+            className={`gt-row ${index ? 'gt-row--spaced' : ''}`}
+          >
+            {/* Color dinámico del bullet */}
+            <span
+              className="gt-dot"
+              style={{ background: item.color || item.fill || '#fff' }}
+            />
+            <strong className="gt-value">{item.value}</strong>
+            <span className="gt-name">{item.name}</span>
+          </div>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -227,19 +255,19 @@ export default function CallsPage() {
 
       {/* Tab Navigation */}
       <div className="tab-navigation">
-        <button 
+        <button
           className={`tab-button ${activeTab === 'dashboard' ? 'active' : ''}`}
           onClick={() => setActiveTab('dashboard')}
         >
           Dashboard
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'table' ? 'active' : ''}`}
           onClick={() => setActiveTab('table')}
         >
           Calls table
         </button>
-        <button 
+        <button
           className={`tab-button ${activeTab === 'loads' ? 'active' : ''}`}
           onClick={() => setActiveTab('loads')}
         >
@@ -308,6 +336,7 @@ export default function CallsPage() {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
+                    innerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -315,7 +344,7 @@ export default function CallsPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip content={<GlassTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -331,6 +360,7 @@ export default function CallsPage() {
                     labelLine={false}
                     label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
+                    innerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -338,7 +368,7 @@ export default function CallsPage() {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip content={<GlassTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -350,8 +380,11 @@ export default function CallsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill={primaryColor} />
+                  <Tooltip cursor={false} content={<GlassTooltip />} />
+                  <Bar dataKey="value" fill={primaryColor} activeBar={{
+                    fill: `${primaryColor}CC`, // make it darker on hover
+                    stroke: primaryColor,
+                  }} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -363,7 +396,7 @@ export default function CallsPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="date" />
                   <YAxis allowDecimals={false} />
-                  <Tooltip />
+                  <Tooltip content={<GlassTooltip />} />
                   <Legend />
                   <Area type="monotone" dataKey="won" stroke="#10B981" fill="#10B981" fillOpacity={0.25} />
                   <Area type="monotone" dataKey="lost" stroke="#EF4444" fill="#EF4444" fillOpacity={0.25} />
@@ -384,8 +417,7 @@ export default function CallsPage() {
                   <YAxis dataKey="id" type="category" />
 
                   <Tooltip
-                    formatter={(value: number, name) => [`$${Math.round(Number(value))}`, name]}
-                    labelFormatter={(l) => `ID: ${l}`}
+                    content={<GlassTooltip />}
                   />
                   <Legend />
 
@@ -454,8 +486,8 @@ export default function CallsPage() {
                     </td>
                     <td>
                       <span className={`sentiment-badge ${call.sentiment}`}>
-                        {call.sentiment === 'pos' ? 'Positive' : 
-                         call.sentiment === 'neg' ? 'Negative' : 'Neutral'}
+                        {call.sentiment === 'pos' ? 'Positive' :
+                          call.sentiment === 'neg' ? 'Negative' : 'Neutral'}
                       </span>
                     </td>
                   </tr>
@@ -493,27 +525,27 @@ export default function CallsPage() {
                     <td>{load.destination}</td>
                     <td>{load.equipment_type}</td>
                     <td>
-                      {load.pickup_datetime 
+                      {load.pickup_datetime
                         ? new Date(load.pickup_datetime).toLocaleDateString()
                         : 'N/A'}
                     </td>
                     <td>
-                      {load.delivery_datetime 
+                      {load.delivery_datetime
                         ? new Date(load.delivery_datetime).toLocaleDateString()
                         : 'N/A'}
                     </td>
                     <td>
-                      {load.loadboard_rate 
+                      {load.loadboard_rate
                         ? `$${load.loadboard_rate.toLocaleString()}`
                         : 'N/A'}
                     </td>
                     <td>
-                      {load.miles 
+                      {load.miles
                         ? `${load.miles.toLocaleString()} mi`
                         : 'N/A'}
                     </td>
                     <td>
-                      {load.weight 
+                      {load.weight
                         ? `${load.weight.toLocaleString()} lbs`
                         : 'N/A'}
                     </td>
