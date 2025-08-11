@@ -219,7 +219,11 @@ export default function CallsPage() {
     const item = payload[0]; // primera serie (tu "value")
 
     return (
-      <div className="gt">
+      <div className="gt" style={
+        {
+          backdropFilter: 'blur(8px)',
+        }
+      }>
         <div className="gt-title">{label}</div>
 
         {payload.map((item, index) => (
@@ -230,7 +234,14 @@ export default function CallsPage() {
             {/* Color dinámico del bullet */}
             <span
               className="gt-dot"
-              style={{ background: item.color || item.fill || '#fff' }}
+              style={{
+                background:
+                  (item as any).payload?.color || // tu data: { name, value, color }
+                  (item as any).payload?.fill || // por si guardas fill en data
+                  item.color || // en Line/Area suele venir aquí
+                  item.fill || // en Bar suele venir aquí
+                  '#fff'
+              }}
             />
             <strong className="gt-value">{item.value}</strong>
             <span className="gt-name">{item.name}</span>
@@ -240,10 +251,58 @@ export default function CallsPage() {
     );
   };
 
+interface RatesTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    color?: string;
+    fill?: string;
+    value?: number;
+    name?: string;
+    payload?: any;
+  }>;
+  label?: string;
+}
+
+const RatesTooltip = ({ active, payload, label }: RatesTooltipProps) => {
+  if (!active || !payload?.length) return null;
+
+  // Nos quedamos solo con estos nombres en este orden
+  const wanted = ["Initial Rate", "Final Rate", "Range"];
+    const colorMap = {
+    "Initial Rate": "#3B82F6",
+    "Final Rate": "#F59E0B",
+    "Range": "#3B82F641", // opcional para que coincida con la barra
+  };
+  const items = payload
+    .filter(it => wanted.includes(it.name ?? ""))
+    .sort((a, b) => wanted.indexOf(a.name ?? "") - wanted.indexOf(b.name ?? ""));
+
+  if (!items.length) return null;
+
+  return (
+    <div className="gt" style={{
+      backdropFilter: 'blur(8px)'
+    }}>
+      {/* Título del tooltip */}
+      <div className="gt-title">{label}</div>
+
+      {items.map((item, i) => (
+        <div key={i} className={`gt-row ${i ? "gt-row--spaced" : ""}`}>
+          <span className="gt-dot" style={{ background: colorMap[item.name as keyof typeof colorMap] || "#fff" }} />
+          <strong className="gt-value">
+            {typeof item.value === "number" ? `$${item.value}` : item.value}
+          </strong>
+          <span className="gt-name">{item.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>FDE Metrics Dashboard</h1>
+        <h1>FDE Dashboard</h1>
         <div className="dark-mode-toggle">
           {darkMode ? (
             <FaSun onClick={() => setDarkMode(false)} />
@@ -337,8 +396,11 @@ export default function CallsPage() {
                     label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                     outerRadius={80}
                     innerRadius={60}
-                    fill="#8884d8"
                     dataKey="value"
+                    activeShape={{
+                      stroke: primaryColor,
+                      strokeWidth: 1,
+                    }}
                   >
                     {metrics.outcome.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -363,6 +425,10 @@ export default function CallsPage() {
                     innerRadius={60}
                     fill="#8884d8"
                     dataKey="value"
+                    activeShape={{
+                      stroke: primaryColor,
+                      strokeWidth: 1,
+                    }}
                   >
                     {metrics.sentiment.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
@@ -417,7 +483,7 @@ export default function CallsPage() {
                   <YAxis dataKey="id" type="category" />
 
                   <Tooltip
-                    content={<GlassTooltip />}
+                    content={<RatesTooltip  />}
                   />
                   <Legend />
 

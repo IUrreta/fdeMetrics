@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FDE Metrics Dashboard",
+  title: "FDE Dashboard",
   description: "A comprehensive dashboard for analyzing call metrics and performance.",
 };
 
