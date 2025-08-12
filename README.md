@@ -8,25 +8,15 @@ FDE Metrics is a modern web application built with Next.js that provides real-ti
 
 ## Features
 
-### 📊 Interactive Dashboard
+### nteractive Dashboard
 - **Call Performance Metrics**: Track win rates, total revenue, and average rates
 - **Real-time Charts**: Visualize outcomes, sentiment analysis, equipment types, and daily trends
 - **Rate Analysis**: Compare initial vs final rates with interactive charts
 
-### 📋 Data Tables
+### Data Tables
 - **Calls Table**: Detailed view of all sales calls with filtering and sorting
 - **Loads Table**: Comprehensive load management with pickup/delivery tracking
-- **Export Capabilities**: Easy data export for further analysis
 
-### 🌙 Dark Mode Support
-- Toggle between light and dark themes
-- Consistent design across all components
-- User preference persistence
-
-### 📱 Responsive Design
-- Mobile-first approach
-- Optimized for tablets and desktop
-- Clean, modern interface
 
 ## Technology Stack
 
